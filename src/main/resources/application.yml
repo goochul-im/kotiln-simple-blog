@@ -1,0 +1,20 @@
+server:
+  port: 9000
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+
+spring:
+  datasource:
+    url: "jdbc:h2:~/blog"
+    username: "sa"
+    password: "123"
+    driver-class-name: "org.h2.Driver"
+  jpa:
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
