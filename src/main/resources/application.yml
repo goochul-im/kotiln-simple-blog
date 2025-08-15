@@ -13,8 +13,15 @@ spring:
     password: "123"
     driver-class-name: "org.h2.Driver"
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: create
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+        globally_quoted_identifiers: true
+
 

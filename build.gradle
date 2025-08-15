@@ -26,7 +26,7 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 //    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -42,6 +42,8 @@ dependencies {
 //    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 //    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // https://mvnrepository.com/artifact/io.github.serpro69/kotlin-faker
+    implementation "io.github.serpro69:kotlin-faker:1.16.0"
 }
 
 kotlin {
