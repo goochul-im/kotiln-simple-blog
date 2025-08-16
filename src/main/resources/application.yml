@@ -8,10 +8,10 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:h2:~/blog"
+    url: "jdbc:p6spy:h2:tcp://localhost:9092/~/blog;"
     username: "sa"
     password: "123"
-    driver-class-name: "org.h2.Driver"
+    driver-class-name: "com.p6spy.engine.spy.P6SpyDriver"
   jpa:
     show-sql: true
     hibernate:
@@ -23,5 +23,10 @@ spring:
       hibernate:
         default_batch_fetch_size: 1000
         globally_quoted_identifiers: true
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
 
 

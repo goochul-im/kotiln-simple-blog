@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import simpleblog.domain.member.Member
 import simpleblog.domain.member.MemberRepository
+import simpleblog.domain.member.MemberRes
+import simpleblog.domain.member.toDto
 
 @Service
 class MemberService (
@@ -12,8 +14,7 @@ class MemberService (
 ){
 
     @Transactional(readOnly = true)
-    fun findAll(): MutableList<Member> = memberRepository.findAll()
-
+    fun findAll(): List<MemberRes> = memberRepository.findAll().map { it.toDto() }
 
 
 }
