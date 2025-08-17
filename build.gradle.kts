@@ -44,7 +44,9 @@ dependencies {
     implementation("io.github.serpro69:kotlin-faker:1.16.0")
     implementation("p6spy:p6spy:3.9.1")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("com.linecorp.kotlin-jdsl:spring-data-jpa-starter:3.5.5")
+    implementation("com.linecorp.kotlin-jdsl:spring-data-jpa-support:3.5.5")
+    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.5.5")
+    implementation("com.linecorp.kotlin-jdsl:jpql-render:3.5.5")
 }
 
 kotlin {
