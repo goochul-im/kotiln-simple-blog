@@ -1,5 +1,7 @@
 package simpleblog.domain.member
 
+import jakarta.validation.constraints.NotNull
+
 /**
  * dto <=> entity 간의 맵핑할 때, 스타일이 2개 있음
  * 1. 각 dto, entity에 책임 할당 (내가 아는 방식)
@@ -7,6 +9,7 @@ package simpleblog.domain.member
  */
 
 data class MemberSaveReq(
+    @field:NotNull(message = "email must not be null")
     val email: String,
     val password: String,
     val role: Role
