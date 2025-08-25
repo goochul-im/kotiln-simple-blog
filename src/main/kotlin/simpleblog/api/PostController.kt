@@ -1,5 +1,6 @@
 package simpleblog.api
 
+import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
@@ -42,7 +43,7 @@ class PostController(
 
     @PostMapping()
     fun savePost(
-        @RequestBody dto: PostSaveReq
+        @Valid @RequestBody dto: PostSaveReq
     ): CmResDto<*> {
         return CmResDto(HttpStatus.OK, "find all posts", postService.savePost(dto))
     }

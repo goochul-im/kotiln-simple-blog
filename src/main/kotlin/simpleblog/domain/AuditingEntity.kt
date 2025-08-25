@@ -19,12 +19,12 @@ abstract class AuditingEntity : AuditingEntityId(
 ){
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    lateinit var createdAt: LocalDateTime
+    var createdAt: LocalDateTime? = null
         protected set
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    lateinit var updatedAt: LocalDateTime
+    var updatedAt: LocalDateTime? = null
         protected set
 
 }
