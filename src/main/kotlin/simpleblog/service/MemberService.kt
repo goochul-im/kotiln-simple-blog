@@ -11,6 +11,7 @@ import simpleblog.domain.member.MemberSaveReq
 import simpleblog.domain.member.findMembersByPage
 import simpleblog.domain.member.toDto
 import simpleblog.domain.member.toEntity
+import simpleblog.exception.MemberNotFoundException
 
 @Service
 class MemberService(
@@ -41,7 +42,9 @@ class MemberService(
     @Transactional(readOnly = true)
     fun findMemberById(id: Long): MemberRes {
 
-        return memberRepository.findById(id).orElseThrow().toDto()
+        return memberRepository.findById(id).orElseThrow {
+            MemberNotFoundException(id)
+        }.toDto()
     }
 
 }
