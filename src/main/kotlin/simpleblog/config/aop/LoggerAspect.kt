@@ -43,16 +43,16 @@ class LoggerAspect(private val mapper: ObjectMapper) {
 
     }
 
-    @AfterReturning(pointcut = "controllerCut()", returning = "result")
-    fun controllerLogAfter(joinPoint: JoinPoint, result: Any) {
+        @AfterReturning(pointcut = "controllerCut()", returning = "result")
+    fun controllerLogAfter(joinPoint: JoinPoint, result: Any?) {
 
 
         log.info {
             """
-                
+
             ${joinPoint.signature.name} 
             Method return value : ${mapper.writeValueAsString(result)}
-            
+
             """.trimIndent()
 
 

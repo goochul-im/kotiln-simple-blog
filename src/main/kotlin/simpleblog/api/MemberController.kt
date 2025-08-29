@@ -8,36 +8,38 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import simpleblog.domain.member.MemberSaveReq
 import simpleblog.service.MemberService
 import simpleblog.util.value.CmResDto
 
 @RestController
+@RequestMapping("/member")
 class MemberController(
     private val memberService: MemberService
 ) {
 
-    @GetMapping("/member")
+    @GetMapping("")
     fun findAllByPage(
         @PageableDefault(size = 20, sort = ["id"]) pageable: Pageable
     ): CmResDto<*> {
         return CmResDto(HttpStatus.OK, "success", memberService.findAllByPage(pageable))
     }
 
-    @GetMapping("/member/{id}")
+    @GetMapping("/{id}")
     fun findMemberById(@PathVariable id: Long): CmResDto<*> {
         return CmResDto(HttpStatus.OK, "find member by id", memberService.findMemberById(id))
     }
 
-    @DeleteMapping("/member/{id}")
+    @DeleteMapping("/{id}")
     fun deleteMember(@PathVariable id: Long): CmResDto<*> {
         return CmResDto(
             HttpStatus.OK, "delete member by id", memberService.deleteMember(id)
         )
     }
 
-    @PostMapping("/member")
+    @PostMapping("")
     fun saveMember(
         @RequestBody dto: MemberSaveReq
     ): CmResDto<*> {
