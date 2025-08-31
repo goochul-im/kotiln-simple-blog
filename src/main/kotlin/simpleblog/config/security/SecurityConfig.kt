@@ -1,21 +1,31 @@
 package simpleblog.config.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.factory.PasswordEncoderFactories
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
-@EnableWebSecurity
-class SecurityConfig {
+@EnableWebSecurity(debug = true)
+class SecurityConfig(
+    private val authenticationConfiguration: AuthenticationConfiguration,
+    private val objectMapper: ObjectMapper
+) {
 
     private val log = mu.KotlinLogging.logger {}
 
@@ -28,9 +38,24 @@ class SecurityConfig {
             .csrf { it.disable()}
             .httpBasic { it.disable() }
             .sessionManagement{ session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS ) }
-
+            .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder{
+        return BCryptPasswordEncoder()
+    }
+
+    @Bean
+    fun authenticationManager(): AuthenticationManager {
+        return authenticationConfiguration.authenticationManager
+    }
+
+    @Bean
+    fun loginFilter(): CustomUsernamePasswordAuthenticationFilter {
+        return CustomUsernamePasswordAuthenticationFilter(objectMapper,authenticationManager())
     }
 
     @Bean

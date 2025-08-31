@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import simpleblog.domain.member.MemberSaveReq
+import simpleblog.domain.member.LoginDto
 import simpleblog.service.MemberService
 import simpleblog.util.value.CmResDto
 
@@ -41,7 +41,7 @@ class MemberController(
 
     @PostMapping("")
     fun saveMember(
-        @RequestBody dto: MemberSaveReq
+        @RequestBody dto: LoginDto
     ): CmResDto<*> {
         return CmResDto(HttpStatus.OK, "save members", memberService.saveMember(dto))
     }

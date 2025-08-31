@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface MemberRepository : JpaRepository<Member, Long>, KotlinJdslJpqlExecutor {
+    fun findMemberByEmail(email: String): Member
 
 }
 

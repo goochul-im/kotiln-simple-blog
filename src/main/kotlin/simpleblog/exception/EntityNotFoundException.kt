@@ -4,4 +4,4 @@ sealed class EntityNotFoundException(message: String?) : BusinessException(messa
 
 }
 
-class MemberNotFoundException(id: Long) : EntityNotFoundException("Member Not Found. id=$id")
+class MemberNotFoundException(id: String) : EntityNotFoundException("Member Not Found. id=$id")

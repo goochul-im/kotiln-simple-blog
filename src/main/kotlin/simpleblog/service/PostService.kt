@@ -2,14 +2,8 @@ package simpleblog.service
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import simpleblog.domain.member.Member
-import simpleblog.domain.member.MemberRes
-import simpleblog.domain.member.MemberSaveReq
-import simpleblog.domain.member.toDto
-import simpleblog.domain.member.toEntity
 import simpleblog.domain.post.Post
 import simpleblog.domain.post.PostRepository
 import simpleblog.domain.post.PostRes

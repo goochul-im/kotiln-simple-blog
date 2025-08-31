@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import simpleblog.domain.member.Member
 import simpleblog.domain.member.MemberRepository
 import simpleblog.domain.member.MemberRes
-import simpleblog.domain.member.MemberSaveReq
+import simpleblog.domain.member.LoginDto
 import simpleblog.domain.member.findMembersByPage
 import simpleblog.domain.member.toDto
 import simpleblog.domain.member.toEntity
@@ -27,7 +27,7 @@ class MemberService(
     fun findAllByPage(pageable: Pageable): Page<Member?> = memberRepository.findMembersByPage(pageable)
 
     @Transactional(readOnly = true)
-    fun saveMember(dto: MemberSaveReq): Member {
+    fun saveMember(dto: LoginDto): Member {
 
         return memberRepository.save(dto.toEntity())
 
@@ -43,7 +43,7 @@ class MemberService(
     fun findMemberById(id: Long): MemberRes {
 
         return memberRepository.findById(id).orElseThrow {
-            MemberNotFoundException(id)
+            MemberNotFoundException(id.toString())
         }.toDto()
     }
 

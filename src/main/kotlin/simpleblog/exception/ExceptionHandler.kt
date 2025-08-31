@@ -1,5 +1,6 @@
 package simpleblog.exception
 
+import jakarta.persistence.NoResultException
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,7 +34,16 @@ class ExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException::class)
     fun handleMethodArgumentNotValidException(e: EntityNotFoundException): ResponseEntity<ErrorResponse> {
-        log.error { "MethodArgumentNotValidException: $e" }
+        log.error { "EntityNotFoundException: $e" }
+
+        val of = ErrorResponse.of(ErrorCode.ENTITY_NOT_FOUND)
+
+        return ResponseEntity(of, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @ExceptionHandler(NoResultException::class)
+    fun handleMethodArgumentNotValidException(e: NoResultException): ResponseEntity<ErrorResponse> {
+        log.error { "NoResultException: $e" }
 
         val of = ErrorResponse.of(ErrorCode.ENTITY_NOT_FOUND)
 

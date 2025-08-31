@@ -5,9 +5,10 @@ import mu.KotlinLogging
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.EventListener
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import simpleblog.domain.member.Member
 import simpleblog.domain.member.MemberRepository
-import simpleblog.domain.member.MemberSaveReq
+import simpleblog.domain.member.LoginDto
 import simpleblog.domain.member.Role
 import simpleblog.domain.member.toEntity
 import simpleblog.domain.post.Post
@@ -41,7 +42,7 @@ class InitData(
         members.forEach { member ->
             for (i in 1..Random.nextInt(1, 5)) {
                 val post = generatePost(member)
-                log.info { "insert post: $post" }
+//                log.info { "insert post: $post" }
                 posts.add(post)
             }
         }
@@ -49,9 +50,9 @@ class InitData(
     }
 
     private fun generateMember(): Member =
-        MemberSaveReq(
+        LoginDto(
             faker.internet.email(),
-            "1234",
+            BCryptPasswordEncoder().encode("1234"),
             Role.USER
         ).toEntity()
 
