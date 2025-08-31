@@ -23,6 +23,8 @@ repositories {
 
 extra["snippetsDir"] = file("build/generated-snippets")
 
+val jjwtVersion = "0.12.5"
+
 dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-actuator")
 //    implementation("org.springframework.boot:spring-boot-starter-cache")
@@ -49,6 +51,12 @@ dependencies {
     implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.5.5")
     implementation("com.linecorp.kotlin-jdsl:jpql-render:3.5.5")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+    // JJWT (Java JWT) 라이브러리
+//    implementation("io.jsonwebtoken:jjwt-api:${jjwtVersion}")
+//    runtimeOnly("io.jsonwebtoken:jjwt-impl:${jjwtVersion}")
+//    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jjwtVersion}")
+
+    implementation("com.auth0:java-jwt:4.4.0")
 }
 
 kotlin {
