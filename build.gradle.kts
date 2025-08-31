@@ -21,7 +21,7 @@ repositories {
     mavenCentral()
 }
 
-extra["snippetsDir"] = file("build/generated-snippets")
+//extra["snippetsDir"] = file("build/generated-snippets")
 
 val jjwtVersion = "0.12.5"
 
@@ -72,11 +72,11 @@ allOpen {
 }
 
 tasks.named<Test>("test") {
-    outputs.dir(extra["snippetsDir"]!!)
+//    outputs.dir(extra["snippetsDir"]!!)
     useJUnitPlatform()
 }
 
-tasks.named("asciidoctor") {
-    inputs.dir(extra["snippetsDir"]!!)
-    dependsOn(tasks.named("test"))
-}
+//tasks.named("asciidoctor") {
+//    inputs.dir(extra["snippetsDir"]!!)
+//    dependsOn(tasks.named("test"))
+//}
