@@ -1,0 +1,65 @@
+package simpleblog.config.security
+
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.DefaultSecurityFilterChain
+import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+
+@Configuration
+@EnableWebSecurity
+class SecurityConfig {
+
+    private val log = mu.KotlinLogging.logger {}
+
+    @Bean
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+
+        http.authorizeHttpRequests { auth -> auth.anyRequest().permitAll() }
+            .cors {  }
+            .formLogin { it.disable() }
+            .csrf { it.disable()}
+            .httpBasic { it.disable() }
+            .sessionManagement{ session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS ) }
+
+
+        return http.build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration().apply {
+            // 허용할 출처(Origin)를 지정합니다.
+            // allowedOrigins = listOf("http://localhost:3000", "https://my-frontend.com")
+            // 패턴을 사용하여 유연하게 설정할 수도 있습니다.
+            allowedOriginPatterns = listOf("*")
+
+            // 허용할 HTTP 메서드를 지정합니다.
+            allowedMethods = listOf("*")
+
+            // 허용할 HTTP 헤더를 지정합니다.
+            allowedHeaders = listOf("*") // 모든 헤더 허용
+
+            // 쿠키 등 자격 증명(Credentials)을 허용할지 여부
+            allowCredentials = true
+
+            // 브라우저에 노출할 헤더를 지정합니다.
+            exposedHeaders = listOf("Authorization", "X-Custom-Header")
+        }
+
+        val source = UrlBasedCorsConfigurationSource().apply {
+            // 모든 경로에 대해 위에서 정의한 CORS 정책을 적용합니다.
+            registerCorsConfiguration("/**", configuration)
+        }
+
+        return source
+    }
+
+}

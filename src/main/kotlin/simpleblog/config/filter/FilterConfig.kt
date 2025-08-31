@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class FilterConfig {
 
-    @Bean
+//    @Bean
     fun registryAuthenticationFilter(): FilterRegistrationBean<MyAuthenticationFilter> {
 
         var bean = FilterRegistrationBean(MyAuthenticationFilter())

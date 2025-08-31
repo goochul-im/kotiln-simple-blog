@@ -23,6 +23,11 @@ spring:
       hibernate:
         default_batch_fetch_size: 1000
         globally_quoted_identifiers: true
+  security:
+    user:
+      name: user
+      password: 1234
+      roles: USER
 
 decorator:
   datasource:
