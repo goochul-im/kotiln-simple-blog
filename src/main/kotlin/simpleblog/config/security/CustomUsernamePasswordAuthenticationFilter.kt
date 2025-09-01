@@ -53,6 +53,6 @@ class CustomUsernamePasswordAuthenticationFilter(
 
         var accessToken = jwtManager.generateAccessToken(details)
 
-        response?.addHeader("Authorization", "Bearer $accessToken")
+        response?.addHeader(jwtManager.jwtHeader, "${jwtManager.jwtPrefix}$accessToken")
     }
 }

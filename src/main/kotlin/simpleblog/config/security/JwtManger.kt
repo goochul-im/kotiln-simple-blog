@@ -12,6 +12,8 @@ class JwtManger {
     private val claimEmail = "email"
     private val claimPassword = "password"
     private val expirationTime = 1000 * 60 * 60
+    val jwtHeader = "Authorization"
+    val jwtPrefix = "Bearer "
 
     fun generateAccessToken(principal: PrincipalDetails): String {
 
@@ -26,7 +28,7 @@ class JwtManger {
         return token
     }
 
-    fun getMemberEmailFromToken(token: String): String {
+    fun getMemberEmailFromToken(token: String): String? {
         return JWT.require(Algorithm.HMAC512(secret)).build().verify(token)
             .getClaim(claimEmail).asString()
     }

@@ -16,15 +16,18 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import simpleblog.domain.member.MemberRepository
 
 @Configuration
 @EnableWebSecurity(debug = true)
 class SecurityConfig(
     private val authenticationConfiguration: AuthenticationConfiguration,
-    private val objectMapper: ObjectMapper
+    private val objectMapper: ObjectMapper,
+    private val memberRepository: MemberRepository
 ) {
 
     private val log = mu.KotlinLogging.logger {}
@@ -32,15 +35,21 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
-        http.authorizeHttpRequests { auth -> auth.anyRequest().permitAll() }
+        http.authorizeHttpRequests { auth -> auth.anyRequest().authenticated() }
             .cors {  }
             .formLogin { it.disable() }
             .csrf { it.disable()}
             .httpBasic { it.disable() }
             .sessionManagement{ session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS ) }
             .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterAt(authenticationFilter(authenticationManager()), BasicAuthenticationFilter::class.java)
 
         return http.build()
+    }
+
+    @Bean
+    fun authenticationFilter(authenticationManager: AuthenticationManager): CustomBasicAuthenticationFilter {
+        return CustomBasicAuthenticationFilter(authenticationManager, memberRepository)
     }
 
     @Bean
