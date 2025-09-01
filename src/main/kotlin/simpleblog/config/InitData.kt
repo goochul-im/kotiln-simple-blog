@@ -28,6 +28,9 @@ class InitData(
     @EventListener(ApplicationReadyEvent::class)
     private fun init() {
 
+        val count = memberRepository.count()
+        if (count >= 200) return
+
         val members = mutableListOf<Member>()
 
         for (i in 1..100) {
