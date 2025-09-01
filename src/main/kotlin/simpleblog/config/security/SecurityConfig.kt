@@ -1,20 +1,24 @@
 package simpleblog.config.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.web.DefaultSecurityFilterChain
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
@@ -35,16 +39,85 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
-        http.authorizeHttpRequests { auth -> auth.anyRequest().authenticated() }
-            .cors {  }
+        http.authorizeHttpRequests { auth ->
+            auth.requestMatchers("/login", "/auth/**").permitAll()
+                .anyRequest().authenticated()
+        }
+            .cors { }
             .formLogin { it.disable() }
-            .csrf { it.disable()}
+            .csrf { it.disable() }
             .httpBasic { it.disable() }
-            .sessionManagement{ session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS ) }
+            .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
             .addFilterAt(authenticationFilter(authenticationManager()), BasicAuthenticationFilter::class.java)
+            .exceptionHandling { exception ->
+                exception.authenticationEntryPoint(CustomAuthenticationEntryPoint(objectMapper))
+                exception.accessDeniedHandler(CustomAccessDeniedHandler(objectMapper))
+            }
 
         return http.build()
+    }
+
+    class CustomAuthenticationEntryPoint(
+        private val objectMapper: ObjectMapper
+    ) : AuthenticationEntryPoint {
+
+        private val log = mu.KotlinLogging.logger {}
+
+        override fun commence(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            authException: AuthenticationException
+        ) {
+            log.warn { "인증 실패 (401 Unauthorized): ${authException.message}, 요청 URI: ${request.requestURI}" }
+
+            response.status = HttpStatus.UNAUTHORIZED.value()
+            response.contentType = MediaType.APPLICATION_JSON_VALUE
+            response.characterEncoding = "UTF-8"
+
+            val errorResponse = mapOf(
+                "status" to HttpStatus.UNAUTHORIZED.value(),
+                "error" to "Unauthorized",
+                "message" to "인증이 필요합니다. 로그인을 진행해주세요."
+            )
+
+            val writer = response.writer
+            writer.write(objectMapper.writeValueAsString(errorResponse))
+            writer.flush()
+        }
+    }
+
+    class CustomAccessDeniedHandler(
+        private val objectMapper: ObjectMapper
+    ) : AccessDeniedHandler {
+
+        private val log = mu.KotlinLogging.logger {}
+
+        override fun handle(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            accessDeniedException: AccessDeniedException?
+        ) {
+            log.warn { "접근 거부됨 (403 Forbidden): ${accessDeniedException?.message}, 요청 URI: ${request.requestURI}" }
+
+            // 응답 상태 코드 설정
+            response.status = HttpStatus.FORBIDDEN.value()
+            // 응답 컨텐츠 타입 및 인코딩 설정
+            response.contentType = MediaType.APPLICATION_JSON_VALUE
+            response.characterEncoding = "UTF-8"
+
+            // 클라이언트에게 보낼 에러 응답 DTO 또는 Map 생성
+            val errorResponse = mapOf(
+                "status" to HttpStatus.FORBIDDEN.value(),
+                "error" to "Forbidden",
+                "message" to "해당 리소스에 접근할 수 있는 권한이 없습니다."
+            )
+
+            // JSON 형태로 응답 바디에 작성
+            val writer = response.writer
+            writer.write(objectMapper.writeValueAsString(errorResponse))
+            writer.flush()
+        }
     }
 
     @Bean
@@ -53,7 +126,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder{
+    fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
 
@@ -64,7 +137,7 @@ class SecurityConfig(
 
     @Bean
     fun loginFilter(): CustomUsernamePasswordAuthenticationFilter {
-        return CustomUsernamePasswordAuthenticationFilter(objectMapper,authenticationManager())
+        return CustomUsernamePasswordAuthenticationFilter(objectMapper, authenticationManager())
     }
 
     @Bean

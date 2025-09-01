@@ -29,6 +29,7 @@ class CustomBasicAuthenticationFilter(
         val token = request.getHeader(jwtManager.jwtHeader)?.replace(jwtManager.jwtPrefix, "")?.trim()
 
         if (token == null){
+            log.error { "token is null" }
             chain.doFilter(request, response)
             return
         }
