@@ -1,0 +1,28 @@
+package simpleblog.config.security.loginHandler
+
+import com.fasterxml.jackson.databind.ObjectMapper
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.core.Authentication
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler
+import simpleblog.config.security.JwtManger
+import simpleblog.config.security.PrincipalDetails
+
+class CustomSuccessfulHandler : AuthenticationSuccessHandler {
+
+    val log = mu.KotlinLogging.logger {}
+    val jwtManager = JwtManger()
+
+    override fun onAuthenticationSuccess(
+        request: HttpServletRequest?,
+        response: HttpServletResponse?,
+        authentication: Authentication?
+    ) {
+
+        var details = authentication?.principal as PrincipalDetails
+
+        var accessToken = jwtManager.generateAccessToken(details)
+
+        response?.addHeader(jwtManager.jwtHeader, "${jwtManager.jwtPrefix}$accessToken")
+    }
+}

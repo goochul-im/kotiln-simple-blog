@@ -40,19 +40,4 @@ class CustomUsernamePasswordAuthenticationFilter(
         return this.authManager.authenticate(token)
     }
 
-    override fun successfulAuthentication(
-        request: HttpServletRequest?,
-        response: HttpServletResponse?,
-        chain: FilterChain?,
-        authResult: Authentication?
-    ) {
-
-        log.info { "로그인 완료 후 JWT 발급" }
-
-        var details = authResult?.principal as PrincipalDetails
-
-        var accessToken = jwtManager.generateAccessToken(details)
-
-        response?.addHeader(jwtManager.jwtHeader, "${jwtManager.jwtPrefix}$accessToken")
-    }
 }
