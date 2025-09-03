@@ -22,7 +22,7 @@ class CustomSuccessfulHandler : AuthenticationSuccessHandler {
 
         var details = authentication?.principal as PrincipalDetails
 
-        var accessToken = jwtManager.generateAccessToken(om.writeValueAsString(details))
+        var accessToken = jwtManager.generateAccessToken(details)
 
         response?.addHeader(jwtManager.jwtHeader, "${jwtManager.jwtPrefix}$accessToken")
     }
