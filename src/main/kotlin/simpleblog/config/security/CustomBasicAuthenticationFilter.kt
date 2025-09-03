@@ -6,13 +6,12 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
-import simpleblog.domain.member.MemberRepository
 
 class CustomBasicAuthenticationFilter(
     authenticationManager: AuthenticationManager,
-    private val memberRepository: MemberRepository
 ) : BasicAuthenticationFilter(authenticationManager){
 
     val log = mu.KotlinLogging.logger {}
@@ -35,15 +34,17 @@ class CustomBasicAuthenticationFilter(
         }
 
         log.debug { "token: $token" }
-        val memberEmail = jwtManager.getMemberEmailFromToken(token) ?: throw RuntimeException("Invalid Token")
 
-        val member = memberRepository.findMemberByEmail(memberEmail)
-        val principalDetails = PrincipalDetails(member)
+        val email = jwtManager.getMemberEmailFromToken(token)
+        val role = jwtManager.getMemberRoleFromToken(token)
+
+        val principalDetails = PrincipalDetails(email = email, role = role)
+        val authorities = listOf(SimpleGrantedAuthority(role))
 
         val authentication : Authentication = UsernamePasswordAuthenticationToken(
             principalDetails,
             null,
-            principalDetails.authorities
+            authorities
         )
 
         SecurityContextHolder.getContext().authentication = authentication

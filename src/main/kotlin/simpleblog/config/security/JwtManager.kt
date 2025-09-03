@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import mu.KotlinLogging
+import simpleblog.domain.member.Role
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -15,6 +16,7 @@ class JwtManager {
     private val secret = "secret"
     private val claimEmail = "email"
     private val claimPrincipal = "principal"
+    private val claimRole = "role"
     private val accessTokenExpirationMinutes : Long = 5
     val jwtHeader = "Authorization"
     val jwtPrefix = "Bearer "
@@ -24,19 +26,26 @@ class JwtManager {
     fun generateAccessToken(principal: PrincipalDetails): String {
         val expireDate = Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(accessTokenExpirationMinutes))
 
+        val role = principal.authorities.first()?.authority?.replace("ROLE_","")
+
         val token = JWT.create()
             .withSubject(jwtSubject)
             .withIssuedAt(Date())
             .withExpiresAt(expireDate)
             .withClaim(claimEmail, principal.username)
+            .withClaim(claimRole, role)
             .withClaim(claimPrincipal, principal.toString())
             .sign(algorithm)
 
         return token
     }
 
-    fun getMemberEmailFromToken(token: String): String? {
+    fun getMemberEmailFromToken(token: String): String {
         return validatedJwt(token).getClaim(claimEmail).asString()
+    }
+
+    fun getMemberRoleFromToken(token: String): String{
+        return validatedJwt(token).getClaim(claimRole).asString()
     }
 
     fun getPrincipalStringByAccessToken(accessToken: String): String{

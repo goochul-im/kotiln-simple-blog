@@ -27,7 +27,6 @@ import simpleblog.domain.member.MemberRepository
 class SecurityConfig(
     private val authenticationConfiguration: AuthenticationConfiguration,
     private val objectMapper: ObjectMapper,
-    private val memberRepository: MemberRepository
 ) {
 
     private val log = mu.KotlinLogging.logger {}
@@ -65,7 +64,7 @@ class SecurityConfig(
     }
 
     fun authenticationFilter(authenticationManager: AuthenticationManager): CustomBasicAuthenticationFilter {
-        return CustomBasicAuthenticationFilter(authenticationManager, memberRepository)
+        return CustomBasicAuthenticationFilter(authenticationManager)
     }
 
     @Bean
