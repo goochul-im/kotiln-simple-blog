@@ -16,7 +16,7 @@ class CustomBasicAuthenticationFilter(
 ) : BasicAuthenticationFilter(authenticationManager){
 
     val log = mu.KotlinLogging.logger {}
-    private val jwtManager = JwtManger()
+    private val jwtManager = JwtManager()
 
     override fun doFilterInternal(
         request: HttpServletRequest,

@@ -1,7 +1,6 @@
 package simpleblog.config.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.AuthenticationManager
@@ -16,7 +15,7 @@ class CustomUsernamePasswordAuthenticationFilter(
 ) : UsernamePasswordAuthenticationFilter(authManager){
 
     private val log = mu.KotlinLogging.logger {}
-    private val jwtManager = JwtManger()
+    private val jwtManager = JwtManager()
 
     override fun attemptAuthentication(
         request: HttpServletRequest?,

@@ -8,7 +8,7 @@ import simpleblog.domain.member.Role
 
 class JwtMangerTest {
 
-    private val jwtManger = JwtManger()
+    private val jwtManager = JwtManager()
 
     @Test
     @DisplayName("access token 생성 테스트")
@@ -18,7 +18,7 @@ class JwtMangerTest {
         val principalDetails = PrincipalDetails(member)
 
         // when
-        val accessToken = jwtManger.generateAccessToken(principalDetails)
+        val accessToken = jwtManager.generateAccessToken(principalDetails)
 
         // then
         Assertions.assertThat(accessToken).isNotEmpty()
@@ -30,10 +30,10 @@ class JwtMangerTest {
         // given
         val member = Member("test@gmail.com", "password", Role.USER)
         val principalDetails = PrincipalDetails(member)
-        val accessToken = jwtManger.generateAccessToken(principalDetails)
+        val accessToken = jwtManager.generateAccessToken(principalDetails)
 
         // when
-        val memberEmailFromToken = jwtManger.getMemberEmailFromToken(accessToken)
+        val memberEmailFromToken = jwtManager.getMemberEmailFromToken(accessToken)
 
         // then
         Assertions.assertThat(memberEmailFromToken).isEqualTo(member.email)

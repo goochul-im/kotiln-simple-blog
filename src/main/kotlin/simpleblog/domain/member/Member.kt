@@ -16,8 +16,6 @@ class Member(
     email: String,
     password: String,
     role: Role
-
-
 ) : AuditingEntity() {
 
     @Column(name = "name", nullable = false)
