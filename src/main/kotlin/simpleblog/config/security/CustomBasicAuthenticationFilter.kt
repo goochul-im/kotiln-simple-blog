@@ -37,8 +37,9 @@ class CustomBasicAuthenticationFilter(
 
         val email = jwtManager.getMemberEmailFromToken(token)
         val role = jwtManager.getMemberRoleFromToken(token)
+        val roleForEnum = role.replace("ROLE_","")
 
-        val principalDetails = PrincipalDetails(email = email, role = role)
+        val principalDetails = PrincipalDetails(email = email, role = roleForEnum)
         val authorities = listOf(SimpleGrantedAuthority(role))
 
         val authentication : Authentication = UsernamePasswordAuthenticationToken(

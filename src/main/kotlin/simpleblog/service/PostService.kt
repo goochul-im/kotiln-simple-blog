@@ -2,6 +2,7 @@ package simpleblog.service
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.security.access.annotation.Secured
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import simpleblog.domain.post.Post
@@ -17,6 +18,7 @@ class PostService(
     private val postRepository: PostRepository
 ) {
     @Transactional()
+    @Secured("ROLE_USER")
     fun findPosts(pageable: Pageable): Page<Post?> {
 
         return postRepository.findPosts(pageable)

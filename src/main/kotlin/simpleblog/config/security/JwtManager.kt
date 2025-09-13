@@ -17,7 +17,7 @@ class JwtManager {
     private val claimEmail = "email"
     private val claimPrincipal = "principal"
     private val claimRole = "role"
-    private val accessTokenExpirationMinutes : Long = 5
+    private val accessTokenExpirationMinutes : Long = 60
     val jwtHeader = "Authorization"
     val jwtPrefix = "Bearer "
     val jwtSubject = "my-token"
@@ -26,7 +26,7 @@ class JwtManager {
     fun generateAccessToken(principal: PrincipalDetails): String {
         val expireDate = Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(accessTokenExpirationMinutes))
 
-        val role = principal.authorities.first()?.authority?.replace("ROLE_","")
+        val role = principal.authorities.first()?.authority
 
         val token = JWT.create()
             .withSubject(jwtSubject)

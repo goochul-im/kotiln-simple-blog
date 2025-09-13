@@ -1,5 +1,6 @@
 package simpleblog.domain.member
 
+import com.linecorp.kotlinjdsl.dsl.jpql.jpql
 import com.linecorp.kotlinjdsl.support.spring.data.jpa.repository.KotlinJdslJpqlExecutor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
