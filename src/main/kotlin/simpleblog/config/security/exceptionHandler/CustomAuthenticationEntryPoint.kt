@@ -6,10 +6,12 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.stereotype.Component
 
 /**
  * 인증이 실패했을 때 호출
  */
+@Component
 class CustomAuthenticationEntryPoint : AuthenticationEntryPoint {
 
     private val log = mu.KotlinLogging.logger {}

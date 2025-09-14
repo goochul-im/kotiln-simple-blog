@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import simpleblog.config.logout.CustomLogoutHandler
+import simpleblog.config.logout.CustomLogoutSuccessHandler
 import simpleblog.config.security.exceptionHandler.CustomAccessDeniedHandler
 import simpleblog.config.security.exceptionHandler.CustomAuthenticationEntryPoint
 import simpleblog.config.security.loginHandler.CustomFailureHandler
@@ -30,6 +32,10 @@ import simpleblog.domain.member.MemberRepository
 class SecurityConfig(
     private val authenticationConfiguration: AuthenticationConfiguration,
     private val objectMapper: ObjectMapper,
+    private val customLogoutSuccessHandler: CustomLogoutSuccessHandler,
+    private val customLogoutHandler: CustomLogoutHandler,
+    private val customAccessDeniedHandler: CustomAccessDeniedHandler,
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint
 ) {
 
     private val log = mu.KotlinLogging.logger {}
@@ -38,7 +44,7 @@ class SecurityConfig(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
         http.authorizeHttpRequests { auth ->
-            auth.requestMatchers("/login", "/auth/**").permitAll()
+            auth.requestMatchers("/login", "/auth/**", "/error").permitAll()
                 .anyRequest().authenticated()
         }
             .cors { }
@@ -49,21 +55,16 @@ class SecurityConfig(
             .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
             .addFilterAt(authenticationFilter(authenticationManager()), BasicAuthenticationFilter::class.java)
             .exceptionHandling { exception ->
-                exception.authenticationEntryPoint(CustomAuthenticationEntryPoint())
-                exception.accessDeniedHandler(CustomAccessDeniedHandler())
+                exception.authenticationEntryPoint(customAuthenticationEntryPoint)
+                exception.accessDeniedHandler(customAccessDeniedHandler)
             }
             .logout { logout ->
                 logout.logoutUrl("/logout")
-                    .addLogoutHandler(customLogoutHandler())
-
+                    .addLogoutHandler(customLogoutHandler)
+                    .logoutSuccessHandler(customLogoutSuccessHandler)
             }
 
         return http.build()
-    }
-
-    @Bean
-    fun customLogoutHandler(): CustomLogoutHandler {
-        return CustomLogoutHandler()
     }
 
     @Bean

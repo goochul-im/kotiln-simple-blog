@@ -6,11 +6,13 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.web.access.AccessDeniedHandler
+import org.springframework.stereotype.Component
 
 /**
  * 인가에 실패했을 때 호출
  * 인증(로그인)은 되었지만, 접근할 권한이 없을 때
  */
+@Component
 class CustomAccessDeniedHandler : AccessDeniedHandler {
 
     private val log = mu.KotlinLogging.logger {}
