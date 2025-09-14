@@ -49,11 +49,21 @@ class SecurityConfig(
             .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
             .addFilterAt(authenticationFilter(authenticationManager()), BasicAuthenticationFilter::class.java)
             .exceptionHandling { exception ->
-                exception.authenticationEntryPoint(CustomAuthenticationEntryPoint(objectMapper))
-                exception.accessDeniedHandler(CustomAccessDeniedHandler(objectMapper))
+                exception.authenticationEntryPoint(CustomAuthenticationEntryPoint())
+                exception.accessDeniedHandler(CustomAccessDeniedHandler())
+            }
+            .logout { logout ->
+                logout.logoutUrl("/logout")
+                    .addLogoutHandler(customLogoutHandler())
+
             }
 
         return http.build()
+    }
+
+    @Bean
+    fun customLogoutHandler(): CustomLogoutHandler {
+        return CustomLogoutHandler()
     }
 
     @Bean
