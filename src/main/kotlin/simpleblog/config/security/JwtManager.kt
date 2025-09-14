@@ -23,6 +23,10 @@ class JwtManager {
     val jwtSubject = "my-token"
     val algorithm: Algorithm = Algorithm.HMAC512(secret)
 
+    fun generateRefreshToken(principal: PrincipalDetails) : String {
+
+    }
+
     fun generateAccessToken(principal: PrincipalDetails): String {
         val expireDate = Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(accessTokenExpirationMinutes))
 

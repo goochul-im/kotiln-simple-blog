@@ -4,9 +4,6 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
 import jakarta.persistence.Table
 import simpleblog.domain.AuditingEntity
 
@@ -30,8 +27,18 @@ class Member(
     var role: Role = role
         protected set
 
+    fun toDto() =
+        MemberRes(
+            this.id!!,
+            this.email,
+            this.password,
+            this.role,
+            createdAt = this.createdAt,
+            lastUpdatedAt = this.updatedAt
+        )
+
     override fun toString(): String {
-        return "Member(email='$email', password='$password', role=$role)"
+        return "Member(email='$email', password='$password', role=$role, createdAt=$createdAt, updatedAt=$updatedAt)"
     }
 
     companion object {
@@ -48,13 +55,7 @@ class Member(
 
 }
 
-fun Member.toDto() =
-    MemberRes(
-        this.id!!,
-        this.email,
-        this.password,
-        this.role
-    )
+
 
 enum class Role {
     ADMIN,

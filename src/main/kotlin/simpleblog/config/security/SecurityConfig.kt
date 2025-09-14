@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -24,7 +23,6 @@ import simpleblog.config.security.exceptionHandler.CustomAccessDeniedHandler
 import simpleblog.config.security.exceptionHandler.CustomAuthenticationEntryPoint
 import simpleblog.config.security.loginHandler.CustomFailureHandler
 import simpleblog.config.security.loginHandler.CustomSuccessfulHandler
-import simpleblog.domain.member.MemberRepository
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -55,13 +53,13 @@ class SecurityConfig(
             .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
             .addFilterAt(authenticationFilter(authenticationManager()), BasicAuthenticationFilter::class.java)
             .exceptionHandling { exception ->
-                exception.authenticationEntryPoint(customAuthenticationEntryPoint)
-                exception.accessDeniedHandler(customAccessDeniedHandler)
+                exception.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 예외
+                exception.accessDeniedHandler(customAccessDeniedHandler) // 인가 예외
             }
             .logout { logout ->
                 logout.logoutUrl("/logout")
-                    .addLogoutHandler(customLogoutHandler)
-                    .logoutSuccessHandler(customLogoutSuccessHandler)
+                    .addLogoutHandler(customLogoutHandler) // 로그아웃 로직
+                    .logoutSuccessHandler(customLogoutSuccessHandler) // 로그아웃 후 처리하는 로직 (response)
             }
 
         return http.build()
@@ -92,7 +90,7 @@ class SecurityConfig(
     }
 
     fun loginFilter(): CustomUsernamePasswordAuthenticationFilter {
-        var filter =
+        val filter =
             CustomUsernamePasswordAuthenticationFilter(objectMapper, authenticationManager())
         filter.setAuthenticationFailureHandler(customFailureHandler())
         filter.setAuthenticationSuccessHandler(customSuccessfulHandler())
