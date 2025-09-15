@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 import simpleblog.domain.AuditingEntity
 import simpleblog.domain.member.Member
-import simpleblog.domain.member.toDto
 
 @Entity
 @Table(name = "Post")

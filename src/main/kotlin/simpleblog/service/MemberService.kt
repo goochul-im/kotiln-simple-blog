@@ -9,37 +9,33 @@ import simpleblog.domain.member.MemberRepository
 import simpleblog.domain.member.MemberRes
 import simpleblog.domain.member.LoginDto
 import simpleblog.domain.member.findMembersByPage
-import simpleblog.domain.member.toDto
 import simpleblog.domain.member.toEntity
 import simpleblog.exception.MemberNotFoundException
 
 @Service
+@Transactional(readOnly = true)
 class MemberService(
     private val memberRepository: MemberRepository
 
 ) {
 
-    @Transactional(readOnly = true)
     fun findAll(): List<MemberRes> = memberRepository.findAll().mapNotNull { it?.toDto() }
     // it(member)이 null일 경우는 자동으로 제외
 
-    @Transactional(readOnly = true)
     fun findAllByPage(pageable: Pageable): Page<Member?> = memberRepository.findMembersByPage(pageable)
 
-    @Transactional(readOnly = true)
+    @Transactional
     fun saveMember(dto: LoginDto): Member {
 
         return memberRepository.save(dto.toEntity())
 
     }
 
-    @Transactional(readOnly = true)
     fun deleteMember(id: Long) {
 
         return memberRepository.deleteById(id)
     }
 
-    @Transactional(readOnly = true)
     fun findMemberById(id: Long): MemberRes {
 
         return memberRepository.findById(id).orElseThrow {

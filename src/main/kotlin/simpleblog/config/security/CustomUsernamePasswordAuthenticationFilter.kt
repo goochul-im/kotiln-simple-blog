@@ -34,7 +34,7 @@ class CustomUsernamePasswordAuthenticationFilter(
 
         log.info { "loginDto: $loginDto" }
 
-        var token = UsernamePasswordAuthenticationToken(loginDto.email, loginDto.password)
+        val token = UsernamePasswordAuthenticationToken(loginDto.email, loginDto.password)
 
         return this.authManager.authenticate(token)
     }

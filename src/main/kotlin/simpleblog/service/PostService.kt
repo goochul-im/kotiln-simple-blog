@@ -14,30 +14,28 @@ import simpleblog.domain.post.toDto
 import simpleblog.domain.post.toEntity
 
 @Service
+@Transactional(readOnly = true)
 class PostService(
     private val postRepository: PostRepository
 ) {
-    @Transactional()
+
     @Secured("ROLE_USER")
     fun findPosts(pageable: Pageable): Page<Post?> {
 
         return postRepository.findPosts(pageable)
     }
 
-    @Transactional(readOnly = true)
     fun savePost(dto: PostSaveReq): Post {
 
         return postRepository.save(dto.toEntity())
 
     }
 
-    @Transactional(readOnly = true)
     fun deletePost(id: Long) {
 
         return postRepository.deleteById(id)
     }
 
-    @Transactional(readOnly = true)
     fun findPostById(id: Long): PostRes {
 
         return postRepository.findById(id).orElseThrow().toDto()

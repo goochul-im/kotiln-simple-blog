@@ -6,25 +6,33 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
 import com.auth0.jwt.interfaces.DecodedJWT
 import mu.KotlinLogging
-import simpleblog.domain.member.Role
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import javax.crypto.SecretKey
 
 class JwtManager {
 
     private val log = KotlinLogging.logger {}
-    private val secret = "secret"
+    private val accessTokenSecretKey = "secret"
+    private val refreshTokenSecretKey = "refreshSecret"
     private val claimEmail = "email"
     private val claimPrincipal = "principal"
     private val claimRole = "role"
     private val accessTokenExpirationMinutes : Long = 60
+    val refreshTokenExpirationHour : Long = 24
     val jwtHeader = "Authorization"
     val jwtPrefix = "Bearer "
     val jwtSubject = "my-token"
-    val algorithm: Algorithm = Algorithm.HMAC512(secret)
+    val algorithm: Algorithm = Algorithm.HMAC512(accessTokenSecretKey)
 
-    fun generateRefreshToken(principal: PrincipalDetails) : String {
+    fun generateRefreshToken(principal: PrincipalDetails): String {
+        val expireDate = Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(refreshTokenExpirationHour))
 
+        val role = principal.authorities.first()?.authority
+
+        val token = generateToken(expireDate, principal, role, refreshTokenSecretKey)
+
+        return token
     }
 
     fun generateAccessToken(principal: PrincipalDetails): String {
@@ -32,14 +40,7 @@ class JwtManager {
 
         val role = principal.authorities.first()?.authority
 
-        val token = JWT.create()
-            .withSubject(jwtSubject)
-            .withIssuedAt(Date())
-            .withExpiresAt(expireDate)
-            .withClaim(claimEmail, principal.username)
-            .withClaim(claimRole, role)
-            .withClaim(claimPrincipal, principal.toString())
-            .sign(algorithm)
+        val token = generateToken(expireDate, principal, role, accessTokenSecretKey)
 
         return token
     }
@@ -73,5 +74,19 @@ class JwtManager {
             throw RuntimeException("invalid jwt")
         }
     }
+
+    private fun generateToken(
+        expireDate: Date,
+        principal: PrincipalDetails,
+        role: String?,
+        secretKey: String
+    ): String = JWT.create()
+        .withSubject(jwtSubject)
+        .withIssuedAt(Date())
+        .withExpiresAt(expireDate)
+        .withClaim(claimEmail, principal.username)
+        .withClaim(claimRole, role)
+        .withClaim(claimPrincipal, principal.toString())
+        .sign(Algorithm.HMAC512(secretKey))
 
 }
