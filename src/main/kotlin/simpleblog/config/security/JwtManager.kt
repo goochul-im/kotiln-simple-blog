@@ -4,8 +4,11 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
+import com.auth0.jwt.exceptions.TokenExpiredException
 import com.auth0.jwt.interfaces.DecodedJWT
+import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
+import simpleblog.util.CookieProvider
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.crypto.SecretKey
@@ -18,7 +21,7 @@ class JwtManager {
     private val claimEmail = "email"
     private val claimPrincipal = "principal"
     private val claimRole = "role"
-    private val accessTokenExpirationMinutes : Long = 60
+    private val accessTokenExpirationMinutes : Long = 1
     val refreshTokenExpirationHour : Long = 24
     val jwtHeader = "Authorization"
     val jwtPrefix = "Bearer "
@@ -45,33 +48,35 @@ class JwtManager {
         return token
     }
 
-    fun getMemberEmailFromToken(token: String): String {
-        return validatedJwt(token).getClaim(claimEmail).asString()
+    fun getMemberEmailFromToken(token: DecodedJWT): String {
+        return token.getClaim(claimEmail).asString()
     }
 
-    fun getMemberRoleFromToken(token: String): String{
-        return validatedJwt(token).getClaim(claimRole).asString()
+    fun getMemberRoleFromToken(token: DecodedJWT): String{
+        return token.getClaim(claimRole).asString()
     }
 
-    fun getPrincipalStringByAccessToken(accessToken: String): String{
-
-        val decodedJWT = validatedJwt(accessToken)
-        val principalString = decodedJWT.getClaim(claimPrincipal).asString()
-
-        return principalString
-    }
-
-    fun validatedJwt(accessToken: String) : DecodedJWT {
+    fun validateAccessToken(accessToken: String) : DecodedJWT {
         try {
-            val verifier: JWTVerifier = JWT.require(algorithm)
-                .build()
+            val verifier: JWTVerifier = JWT.require(algorithm).build()
+            return verifier.verify(accessToken)
+        } catch (exception: TokenExpiredException) {
+            log.error { "Access token expired: $exception" }
+            throw exception
+        }
+        catch (exception: JWTVerificationException) {
+            log.error { "Invalid access token: $exception" }
+            throw RuntimeException("Invalid access token")
+        }
+    }
 
-            val jwt: DecodedJWT = verifier.verify(accessToken)
-
-            return jwt
+    fun validateRefreshToken(refreshToken: String): DecodedJWT {
+        try {
+            val verifier: JWTVerifier = JWT.require(Algorithm.HMAC512(refreshTokenSecretKey)).build()
+            return verifier.verify(refreshToken)
         } catch (exception: JWTVerificationException) {
-            log.error { "exception: $exception" }
-            throw RuntimeException("invalid jwt")
+            log.error { "Invalid refresh token: $exception" }
+            throw RuntimeException("Invalid refresh token")
         }
     }
 

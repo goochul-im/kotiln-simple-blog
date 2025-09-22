@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import simpleblog.config.security.JwtManager
 import simpleblog.config.security.PrincipalDetails
+import simpleblog.config.security.util.JwtNameConstant
 import simpleblog.util.CookieProvider
 import java.util.concurrent.TimeUnit
 
@@ -29,7 +30,7 @@ class CustomSuccessfulHandler : AuthenticationSuccessHandler {
         val refreshToken = jwtManager.generateRefreshToken(details)
 
         val refreshCookie = CookieProvider.createCookie(
-            "refreshToken",
+            JwtNameConstant.REFRESH_TOKEN_NAME,
             refreshToken,
             TimeUnit.HOURS.toSeconds(jwtManager.refreshTokenExpirationHour)
         )

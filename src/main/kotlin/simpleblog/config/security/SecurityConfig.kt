@@ -23,6 +23,7 @@ import simpleblog.config.security.exceptionHandler.CustomAccessDeniedHandler
 import simpleblog.config.security.exceptionHandler.CustomAuthenticationEntryPoint
 import simpleblog.config.security.loginHandler.CustomFailureHandler
 import simpleblog.config.security.loginHandler.CustomSuccessfulHandler
+import simpleblog.service.AuthService
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -33,7 +34,8 @@ class SecurityConfig(
     private val customLogoutSuccessHandler: CustomLogoutSuccessHandler,
     private val customLogoutHandler: CustomLogoutHandler,
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
-    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint
+    private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
+    private val authService: AuthService
 ) {
 
     private val log = mu.KotlinLogging.logger {}
@@ -51,7 +53,7 @@ class SecurityConfig(
             .httpBasic { it.disable() }
             .sessionManagement { session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterAt(loginFilter(), UsernamePasswordAuthenticationFilter::class.java)
-            .addFilterAt(authenticationFilter(authenticationManager()), BasicAuthenticationFilter::class.java)
+            .addFilterAt(authenticationFilter(authenticationManager(), authService), BasicAuthenticationFilter::class.java)
             .exceptionHandling { exception ->
                 exception.authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 예외
                 exception.accessDeniedHandler(customAccessDeniedHandler) // 인가 예외
@@ -75,8 +77,8 @@ class SecurityConfig(
         return CustomFailureHandler()
     }
 
-    fun authenticationFilter(authenticationManager: AuthenticationManager): CustomBasicAuthenticationFilter {
-        return CustomBasicAuthenticationFilter(authenticationManager)
+    fun authenticationFilter(authenticationManager: AuthenticationManager, authService: AuthService): CustomBasicAuthenticationFilter {
+        return CustomBasicAuthenticationFilter(authenticationManager, authService)
     }
 
     @Bean
