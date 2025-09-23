@@ -20,11 +20,11 @@ import simpleblog.util.CookieProvider
 
 class CustomBasicAuthenticationFilter(
     authenticationManager: AuthenticationManager,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val jwtManager: JwtManager
 ) : BasicAuthenticationFilter(authenticationManager){
 
     val log = mu.KotlinLogging.logger {}
-    private val jwtManager = JwtManager()
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -59,6 +59,9 @@ class CustomBasicAuthenticationFilter(
         chain.doFilter(request, response)
     }
 
+    /**
+     * SecurityContextHolder에 authentication 저장
+     */
     private fun setAuthentication(decodedJWT: DecodedJWT) {
         val email = jwtManager.getMemberEmailFromToken(decodedJWT)
         val role = jwtManager.getMemberRoleFromToken(decodedJWT)
@@ -76,7 +79,9 @@ class CustomBasicAuthenticationFilter(
         SecurityContextHolder.getContext().authentication = authentication
     }
 
-    // 토큰 재발급 로직을 별도 메서드로 분리
+    /**
+     * 토큰 재발급 로직
+     */
     private fun handleTokenRefresh(request: HttpServletRequest, response: HttpServletResponse) {
         try {
             // 쿠키에서 리프레시 토큰 가져오기

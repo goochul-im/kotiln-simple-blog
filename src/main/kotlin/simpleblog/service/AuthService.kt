@@ -10,10 +10,10 @@ import simpleblog.domain.member.MemberRepository
 @Service
 class AuthService(
     private val memberRepo: MemberRepository,
+    private val jwtManager: JwtManager
 ) : UserDetailsService {
 
     val log = mu.KotlinLogging.logger {}
-    val jwtManager = JwtManager()
 
     override fun loadUserByUsername(email: String): UserDetails {
         var findMember = memberRepo.findMemberByEmail(email)

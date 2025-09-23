@@ -12,10 +12,11 @@ import simpleblog.config.security.util.JwtNameConstant
 import simpleblog.util.CookieProvider
 import java.util.concurrent.TimeUnit
 
-class CustomSuccessfulHandler : AuthenticationSuccessHandler {
+class CustomSuccessfulHandler(
+    private val jwtManager: JwtManager
+) : AuthenticationSuccessHandler {
 
     val log = mu.KotlinLogging.logger {}
-    val jwtManager = JwtManager()
     val om = ObjectMapper()
 
     override fun onAuthenticationSuccess(

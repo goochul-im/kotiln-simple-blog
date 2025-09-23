@@ -15,7 +15,6 @@ class CustomUsernamePasswordAuthenticationFilter(
 ) : UsernamePasswordAuthenticationFilter(authManager){
 
     private val log = mu.KotlinLogging.logger {}
-    private val jwtManager = JwtManager()
 
     override fun attemptAuthentication(
         request: HttpServletRequest?,

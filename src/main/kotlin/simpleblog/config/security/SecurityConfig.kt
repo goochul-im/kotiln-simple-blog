@@ -35,7 +35,8 @@ class SecurityConfig(
     private val customLogoutHandler: CustomLogoutHandler,
     private val customAccessDeniedHandler: CustomAccessDeniedHandler,
     private val customAuthenticationEntryPoint: CustomAuthenticationEntryPoint,
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val jwtManager: JwtManager
 ) {
 
     private val log = mu.KotlinLogging.logger {}
@@ -69,7 +70,7 @@ class SecurityConfig(
 
     @Bean
     fun customSuccessfulHandler(): CustomSuccessfulHandler {
-        return CustomSuccessfulHandler()
+        return CustomSuccessfulHandler(jwtManager)
     }
 
     @Bean
@@ -78,7 +79,7 @@ class SecurityConfig(
     }
 
     fun authenticationFilter(authenticationManager: AuthenticationManager, authService: AuthService): CustomBasicAuthenticationFilter {
-        return CustomBasicAuthenticationFilter(authenticationManager, authService)
+        return CustomBasicAuthenticationFilter(authenticationManager, authService, jwtManager)
     }
 
     @Bean

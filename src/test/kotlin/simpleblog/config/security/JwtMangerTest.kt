@@ -31,9 +31,10 @@ class JwtMangerTest {
         val member = Member("test@gmail.com", "password", Role.USER)
         val principalDetails = PrincipalDetails(member)
         val accessToken = jwtManager.generateAccessToken(principalDetails)
+        val decodedjwt = jwtManager.validateAccessToken(accessToken)
 
         // when
-        val memberEmailFromToken = jwtManager.getMemberEmailFromToken(accessToken)
+        val memberEmailFromToken = jwtManager.getMemberEmailFromToken(decodedjwt)
 
         // then
         Assertions.assertThat(memberEmailFromToken).isEqualTo(member.email)

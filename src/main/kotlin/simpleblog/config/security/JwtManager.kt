@@ -8,11 +8,13 @@ import com.auth0.jwt.exceptions.TokenExpiredException
 import com.auth0.jwt.interfaces.DecodedJWT
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
+import org.springframework.stereotype.Component
 import simpleblog.util.CookieProvider
 import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.crypto.SecretKey
 
+@Component
 class JwtManager {
 
     private val log = KotlinLogging.logger {}
